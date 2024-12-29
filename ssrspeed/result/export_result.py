@@ -94,10 +94,10 @@ class ExportResult(object):
 			remark = item["remarks"]
 			inres = item["InRes"]
 			outres = item["OutRes"]
-			maxGroupWidth = max(maxGroupWidth,int(draw.textlength(group,font=font)))
-			maxRemarkWidth = max(maxRemarkWidth,int(draw.textlength(remark,font=font)))
-			lenIn = max(lenIn, int(draw.textlength(inres, font=font)))
-			lenOut = max(lenOut, int(draw.textlength(outres, font=font)))
+			maxGroupWidth = max(maxGroupWidth,draw.textbbox((0,0), group,font=font)[2] - draw.textbbox((0,0), group,font=font)[0])
+			maxRemarkWidth = max(maxRemarkWidth,draw.textbbox((0,0), remark,font=font)[2] - draw.textbbox((0,0), remark,font=font)[0])
+			lenIn = max(lenIn, draw.textbbox((0,0), inres, font=font)[2] - draw.textbbox((0,0), inres, font=font)[0])
+			lenOut = max(lenOut, draw.textbbox((0,0), outres, font=font)[2] - draw.textbbox((0,0), outres, font=font)[0])
 		return (maxGroupWidth + 10,maxRemarkWidth + 10,lenIn + 20,lenOut + 20)
 
 	def __getMaxWidthStream(self,result):
@@ -150,7 +150,7 @@ class ExportResult(object):
 	def __getBasePos(self, width, text):
 		font = self.__font
 		draw = ImageDraw.Draw(Image.new("RGB",(1,1),(255,255,255)))
-		textSize = draw.textlength(text, font=font)
+		textSize = draw.textbbox((0,0), text, font=font)[2] - draw.textbbox((0,0), text, font=font)[0]
 		basePos = (width - textSize) / 2
 		logger.debug("Base Position {}".format(basePos))
 		return basePos
@@ -790,4 +790,3 @@ class ExportResult(object):
 			f.writelines(json.dumps(result,sort_keys=True,indent=4,separators=(',',':')))
 		logger.info("Result exported as %s" % filename)
 		return result
-
